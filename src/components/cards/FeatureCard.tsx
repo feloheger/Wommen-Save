@@ -28,7 +28,7 @@ export const FeatureCard: React.FC<FeatureCardProps> = ({
 
   return (
     <AnimatedPressable
-      style={animatedStyle}
+     
       onPressIn={() => {
         scale.value = withSpring(0.97);
       }}
