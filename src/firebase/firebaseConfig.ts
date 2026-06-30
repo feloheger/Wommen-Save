@@ -3,10 +3,11 @@
  * Werte werden aus Umgebungsvariablen geladen (siehe .env.example)
  */
 import { initializeApp, getApps, getApp } from "firebase/app";
-import { initializeAuth, getReactNativePersistence, getAuth } from "firebase/auth";
+import { initializeAuth, getUnderlyingProvider } from 'firebase/auth';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { getFirestore } from "firebase/firestore";
 import { getMessaging, isSupported } from "firebase/messaging";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+
 import Constants from "expo-constants";
 import { Platform } from "react-native";
 
@@ -22,13 +23,9 @@ const firebaseConfig = {
 export const firebaseApp = getApps().length ? getApp() : initializeApp(firebaseConfig);
 
 // Auth mit persistenter Session via AsyncStorage (React Native)
-export const auth =
-  Platform.OS === "web"
-    ? getAuth(firebaseApp)
-    : initializeAuth(firebaseApp, {
-        persistence: getReactNativePersistence(AsyncStorage),
-      });
-
+export const auth = initializeAuth(app, {
+  persistence: (AsyncStorage as any)
+});
 export const firestore = getFirestore(firebaseApp);
 
 // Cloud Messaging ist nur auf unterstützten Plattformen verfügbar
