@@ -1,0 +1,81 @@
+{
+  "expo": {
+    "name": "Women Save",
+    "slug": "women-save",
+    "scheme": "womensave",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/images/icon.png",
+    "userInterfaceStyle": "automatic",
+    "newArchEnabled": true,
+    "splash": {
+      "image": "./assets/images/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#7C5CFC"
+    },
+    "assetBundlePatterns": ["**/*"],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.womensave.app",
+      "buildNumber": "1.0.0",
+      "config": {
+        "usesNonExemptEncryption": false
+      },
+      "infoPlist": {
+        "NSLocationWhenInUseUsageDescription": "Women Save benötigt deinen Standort, um dich bei einem Notfall zu orten und deinen Vertrauenspersonen mitzuteilen.",
+        "NSLocationAlwaysAndWhenInUseUsageDescription": "Women Save nutzt deinen Standort im Hintergrund, um deinen Safe Walk live zu verfolgen.",
+        "NSContactsUsageDescription": "Women Save benötigt Zugriff auf deine Kontakte, um Vertrauenspersonen hinzuzufügen.",
+        "UIBackgroundModes": ["location", "remote-notification"]
+      }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/images/adaptive-icon.png",
+        "backgroundColor": "#7C5CFC"
+      },
+      "package": "com.womensave.app",
+      "permissions": [
+        "ACCESS_FINE_LOCATION",
+        "ACCESS_COARSE_LOCATION",
+        "ACCESS_BACKGROUND_LOCATION",
+        "READ_CONTACTS",
+        "SEND_SMS",
+        "VIBRATE",
+        "RECEIVE_BOOT_COMPLETED",
+        "POST_NOTIFICATIONS"
+      ]
+    },
+    "plugins": [
+      "expo-router",
+      "expo-secure-store",
+      "expo-font",
+      [
+        "expo-location",
+        {
+          "locationAlwaysAndWhenInUsePermission": "Women Save nutzt deinen Standort, um dich im Notfall zu schützen."
+        }
+      ],
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/images/notification-icon.png",
+          "color": "#7C5CFC"
+        }
+      ],
+      [
+        "expo-contacts",
+        {
+          "contactsPermission": "Women Save benötigt Zugriff auf deine Kontakte, um Vertrauenspersonen hinzuzufügen."
+        }
+      ]
+    ],
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "REPLACE_WITH_EAS_PROJECT_ID"
+      }
+    }
+  }
+}

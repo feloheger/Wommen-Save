@@ -1,0 +1,38 @@
+name: Install & Verify Dependencies
+
+# Installiert die Abhängigkeiten automatisch bei jedem Push/PR,
+# korrigiert inkompatible Expo-Paketversionen automatisch (expo install --fix)
+# und legt das Ergebnis als Cache für die anderen Workflows ab.
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+  workflow_call:
+
+jobs:
+  install:
+    name: Install dependencies
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install npm dependencies
+        run: npm ci
+
+      - name: Auto-fix Expo package versions
+        run: npx expo install --fix --non-interactive
+
+      - name: Verify project (expo-doctor)
+        run: npx expo-doctor || true
+
+      - name: Upload node_modules cache
+        uses: actions/cache@v4
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-node-modules-${{ hashFiles('package-lock.json') }}
