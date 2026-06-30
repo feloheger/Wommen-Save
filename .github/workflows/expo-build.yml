@@ -34,7 +34,7 @@ jobs:
         run: npm ci
 
       - name: Auto-fix Expo package versions
-        run: npx expo install --fix --non-interactive
+        run:  npx expo install --fix -- --non-interactive
 
       - name: Setup EAS
         uses: expo/expo-github-action@v8

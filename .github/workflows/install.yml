@@ -26,7 +26,7 @@ jobs:
         run: npm ci
 
       - name: Auto-fix Expo package versions
-        run: npx expo install --fix --non-interactive
+        run: npx expo install --fix -- --non-interactive
 
       - name: Verify project (expo-doctor)
         run: npx expo-doctor || true

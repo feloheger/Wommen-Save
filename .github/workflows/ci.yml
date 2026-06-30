@@ -22,7 +22,7 @@ jobs:
           node-version: 20
           cache: npm
       - run: npm ci
-      - run: npx expo install --fix --non-interactive
+      - run: npx expo install --fix -- --non-interactive
       - run: npm run lint
       - run: npm run typecheck
       - run: npm run format:check
