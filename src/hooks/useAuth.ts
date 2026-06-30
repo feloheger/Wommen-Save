@@ -7,7 +7,7 @@ import { doc, getDoc } from "firebase/firestore";
 import { subscribeToAuthChanges } from "@firebase-config/authService";
 import { firestore } from "@firebase-config/firebaseConfig";
 import { useAuthStore } from "@store/authStore";
-import type { UserProfile } from "@types/index";
+import type { UserProfile } from "@types";
 
 export const useAuth = () => {
   const { user, isLoading, setUser, setLoading } = useAuthStore();
