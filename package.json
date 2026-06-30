@@ -20,7 +20,7 @@
     "test:watch": "jest --watch",
     "test:ci": "jest --ci --coverage",
     "prepare": "husky",
-    "postinstall": "expo install --fix --non-interactive || true",
+    "postinstall": "expo install --fix -- --non-interactive || true",
     "submit:ios": "eas submit --platform ios --latest",
     "build:ios:preview": "eas build --platform ios --profile preview"
   },
