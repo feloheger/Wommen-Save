@@ -3,13 +3,12 @@
  * Werte werden aus Umgebungsvariablen geladen (siehe .env.example)
  */
 import { initializeApp, getApps, getApp } from "firebase/app";
-import { initializeAuth, getUnderlyingProvider } from 'firebase/auth';
+import { initializeAuth, getReactNativePersistence } from 'firebase/auth';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { getFirestore } from "firebase/firestore";
 import { getMessaging, isSupported } from "firebase/messaging";
 
 import Constants from "expo-constants";
-import { Platform } from "react-native";
 
 const firebaseConfig = {
   apiKey: process.env.EXPO_PUBLIC_FIREBASE_API_KEY,
@@ -20,12 +19,14 @@ const firebaseConfig = {
   appId: process.env.EXPO_PUBLIC_FIREBASE_APP_ID,
 };
 
+// App initialisieren (stellt sicher, dass sie nur einmal initialisiert wird)
 export const firebaseApp = getApps().length ? getApp() : initializeApp(firebaseConfig);
 
-// Auth mit persistenter Session via AsyncStorage (React Native)
-export const auth = initializeAuth(app, {
-  persistence: (AsyncStorage as any)
+// Auth mit persistenter Session via AsyncStorage (korrekt für Firebase v11 + Expo v52)
+export const auth = initializeAuth(firebaseApp, {
+  persistence: getReactNativePersistence(AsyncStorage)
 });
+
 export const firestore = getFirestore(firebaseApp);
 
 // Cloud Messaging ist nur auf unterstützten Plattformen verfügbar
