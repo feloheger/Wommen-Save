@@ -3,7 +3,9 @@
  * Werte werden aus Umgebungsvariablen geladen (siehe .env.example)
  */
 import { initializeApp, getApps, getApp } from "firebase/app";
-import { initializeAuth, getReactNativePersistence } from 'firebase/auth';
+import { initializeAuth } from 'firebase/auth';
+// In Firebase v11 liegt getReactNativePersistence genau hier:
+import { getReactNativePersistence } from 'firebase/auth/react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { getFirestore } from "firebase/firestore";
 import { getMessaging, isSupported } from "firebase/messaging";
@@ -22,7 +24,7 @@ const firebaseConfig = {
 // App initialisieren (stellt sicher, dass sie nur einmal initialisiert wird)
 export const firebaseApp = getApps().length ? getApp() : initializeApp(firebaseConfig);
 
-// Auth mit persistenter Session via AsyncStorage (korrekt für Firebase v11 + Expo v52)
+// Auth mit persistenter Session via AsyncStorage (Korrekt für Firebase v11 + Expo v52)
 export const auth = initializeAuth(firebaseApp, {
   persistence: getReactNativePersistence(AsyncStorage)
 });
