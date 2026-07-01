@@ -19,7 +19,7 @@ import {
 import { ScreenContainer } from "@components/common/ScreenContainer";
 import { Card } from "@components/ui/Card";
 import { useSettingsStore } from "@store/settingsStore";
-import { logoutUser } from "@supabase/authService";
+import { supabase } from "@services/supabaseClient";
 import { SUPPORT_EMAIL, PRIVACY_URL } from "@constants/config";
 
 interface RowProps {
@@ -55,7 +55,7 @@ export const SettingsScreen: React.FC = () => {
   } = useSettingsStore();
 
   const handleLogout = async () => {
-    await logoutUser();
+    await supabase.auth.signOut();
     router.replace("/(auth)/login");
   };
 
