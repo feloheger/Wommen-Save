@@ -1,5 +1,5 @@
 /**
- * Login Screen
+ * Login Screen – Supabase statt Firebase
  */
 import React, { useState } from "react";
 import { View, Text, Pressable } from "react-native";
@@ -12,11 +12,11 @@ import { ScreenContainer } from "@components/common/ScreenContainer";
 import { Input } from "@components/ui/Input";
 import { Button } from "@components/ui/Button";
 import { loginSchema, type LoginFormData } from "@utils/validation";
-import { loginUser } from "@firebase-config/authService";
+import { loginUser } from "@supabase/authService";
 
 export const LoginScreen: React.FC = () => {
   const [loading, setLoading] = useState(false);
-  const [firebaseError, setFirebaseError] = useState<string | null>(null);
+  const [authError, setAuthError] = useState<string | null>(null);
 
   const {
     control,
@@ -25,13 +25,13 @@ export const LoginScreen: React.FC = () => {
   } = useForm<LoginFormData>({ resolver: zodResolver(loginSchema) });
 
   const onSubmit = async (data: LoginFormData) => {
-    setFirebaseError(null);
+    setAuthError(null);
     setLoading(true);
     try {
       await loginUser(data.email, data.password);
       router.replace("/(tabs)/home");
-    } catch (err) {
-      setFirebaseError("Anmeldung fehlgeschlagen. Bitte überprüfe deine Daten.");
+    } catch {
+      setAuthError("Anmeldung fehlgeschlagen. Bitte überprüfe deine Daten.");
     } finally {
       setLoading(false);
     }
@@ -86,8 +86,8 @@ export const LoginScreen: React.FC = () => {
         <Text className="font-poppins-medium text-sm text-primary">Passwort vergessen?</Text>
       </Pressable>
 
-      {firebaseError && (
-        <Text className="mb-4 text-center font-poppins text-sm text-danger">{firebaseError}</Text>
+      {authError && (
+        <Text className="mb-4 text-center font-poppins text-sm text-danger">{authError}</Text>
       )}
 
       <Button label="Anmelden" onPress={handleSubmit(onSubmit)} loading={loading} />

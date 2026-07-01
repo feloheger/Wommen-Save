@@ -1,5 +1,5 @@
 /**
- * Passwort vergessen Screen
+ * Passwort vergessen Screen – Supabase statt Firebase
  */
 import React, { useState } from "react";
 import { View, Text, Pressable } from "react-native";
@@ -12,12 +12,12 @@ import { ScreenContainer } from "@components/common/ScreenContainer";
 import { Input } from "@components/ui/Input";
 import { Button } from "@components/ui/Button";
 import { resetPasswordSchema, type ResetPasswordFormData } from "@utils/validation";
-import { requestPasswordReset } from "@firebase-config/authService";
+import { requestPasswordReset } from "@supabase/authService";
 
 export const ForgotPasswordScreen: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [sent, setSent] = useState(false);
-  const [firebaseError, setFirebaseError] = useState<string | null>(null);
+  const [authError, setAuthError] = useState<string | null>(null);
 
   const {
     control,
@@ -26,13 +26,13 @@ export const ForgotPasswordScreen: React.FC = () => {
   } = useForm<ResetPasswordFormData>({ resolver: zodResolver(resetPasswordSchema) });
 
   const onSubmit = async (data: ResetPasswordFormData) => {
-    setFirebaseError(null);
+    setAuthError(null);
     setLoading(true);
     try {
       await requestPasswordReset(data.email);
       setSent(true);
-    } catch (err) {
-      setFirebaseError("Es konnte keine E-Mail gesendet werden. Bitte überprüfe die Adresse.");
+    } catch {
+      setAuthError("Es konnte keine E-Mail gesendet werden. Bitte überprüfe die Adresse.");
     } finally {
       setLoading(false);
     }
@@ -40,7 +40,10 @@ export const ForgotPasswordScreen: React.FC = () => {
 
   return (
     <ScreenContainer>
-      <Pressable onPress={() => router.back()} className="mt-4 mb-6 h-10 w-10 items-center justify-center rounded-full bg-accent">
+      <Pressable
+        onPress={() => router.back()}
+        className="mt-4 mb-6 h-10 w-10 items-center justify-center rounded-full bg-accent"
+      >
         <ArrowLeft size={20} color="#1A1A2E" />
       </Pressable>
 
@@ -78,10 +81,8 @@ export const ForgotPasswordScreen: React.FC = () => {
             )}
           />
 
-          {firebaseError && (
-            <Text className="mb-4 text-center font-poppins text-sm text-danger">
-              {firebaseError}
-            </Text>
+          {authError && (
+            <Text className="mb-4 text-center font-poppins text-sm text-danger">{authError}</Text>
           )}
 
           <Button label="Link senden" onPress={handleSubmit(onSubmit)} loading={loading} />

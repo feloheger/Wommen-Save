@@ -1,15 +1,20 @@
 /**
- * Root Layout – lädt Schriftarten, initialisiert React Query & Geräte-Identität
- * (ersetzt app/_layout.tsx: useAuth -> useDevice, kein (auth)-Stack mehr nötig)
+ * Root Layout – lädt Schriftarten, initialisiert React Query & Auth
  */
 import React, { useEffect } from "react";
 import { Stack } from "expo-router";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import * as SplashScreen from "expo-splash-screen";
-import { useFonts, Poppins_400Regular, Poppins_500Medium, Poppins_600SemiBold, Poppins_700Bold } from "@expo-google-fonts/poppins";
+import {
+  useFonts,
+  Poppins_400Regular,
+  Poppins_500Medium,
+  Poppins_600SemiBold,
+  Poppins_700Bold,
+} from "@expo-google-fonts/poppins";
 
-import { useDevice } from "@hooks/useDevice";
+import { useAuth } from "@hooks/useAuth";
 import { useSettingsStore } from "@store/settingsStore";
 import "../src/styles/global.css";
 
@@ -25,8 +30,7 @@ export default function RootLayout() {
     Poppins_700Bold,
   });
 
-  // Initialisiert Device-ID + Expo Push Token, kein Login mehr nötig
-  const { isLoading } = useDevice();
+  const { isLoading } = useAuth();
   const hydrateSettings = useSettingsStore((s) => s.hydrate);
 
   useEffect(() => {
@@ -45,7 +49,7 @@ export default function RootLayout() {
     <GestureHandlerRootView style={{ flex: 1 }}>
       <QueryClientProvider client={queryClient}>
         <Stack screenOptions={{ headerShown: false }}>
-          {/* (auth)-Gruppe entfällt komplett, da kein Login mehr existiert */}
+          <Stack.Screen name="(auth)" />
           <Stack.Screen name="(tabs)" />
           <Stack.Screen name="sos" options={{ presentation: "fullScreenModal" }} />
           <Stack.Screen name="safe-walk" />

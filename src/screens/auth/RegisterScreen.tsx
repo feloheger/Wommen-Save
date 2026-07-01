@@ -1,5 +1,5 @@
 /**
- * Registrierung Screen
+ * Registrierung Screen – Supabase statt Firebase
  */
 import React, { useState } from "react";
 import { View, Text, Pressable } from "react-native";
@@ -12,11 +12,11 @@ import { ScreenContainer } from "@components/common/ScreenContainer";
 import { Input } from "@components/ui/Input";
 import { Button } from "@components/ui/Button";
 import { registerSchema, type RegisterFormData } from "@utils/validation";
-import { registerUser } from "@firebase-config/authService";
+import { registerUser } from "@supabase/authService";
 
 export const RegisterScreen: React.FC = () => {
   const [loading, setLoading] = useState(false);
-  const [firebaseError, setFirebaseError] = useState<string | null>(null);
+  const [authError, setAuthError] = useState<string | null>(null);
 
   const {
     control,
@@ -25,13 +25,13 @@ export const RegisterScreen: React.FC = () => {
   } = useForm<RegisterFormData>({ resolver: zodResolver(registerSchema) });
 
   const onSubmit = async (data: RegisterFormData) => {
-    setFirebaseError(null);
+    setAuthError(null);
     setLoading(true);
     try {
       await registerUser(data.name, data.email, data.password);
       router.replace("/(auth)/verify-email");
-    } catch (err) {
-      setFirebaseError("Registrierung fehlgeschlagen. Diese E-Mail wird eventuell bereits verwendet.");
+    } catch {
+      setAuthError("Registrierung fehlgeschlagen. Diese E-Mail wird eventuell bereits verwendet.");
     } finally {
       setLoading(false);
     }
@@ -110,8 +110,8 @@ export const RegisterScreen: React.FC = () => {
         )}
       />
 
-      {firebaseError && (
-        <Text className="mb-4 text-center font-poppins text-sm text-danger">{firebaseError}</Text>
+      {authError && (
+        <Text className="mb-4 text-center font-poppins text-sm text-danger">{authError}</Text>
       )}
 
       <Button label="Registrieren" onPress={handleSubmit(onSubmit)} loading={loading} />

@@ -1,5 +1,5 @@
 /**
- * E-Mail-Verifizierung Screen
+ * E-Mail-Verifizierung Screen – Supabase statt Firebase
  */
 import React, { useState } from "react";
 import { View, Text } from "react-native";
@@ -8,18 +8,25 @@ import { MailCheck } from "lucide-react-native";
 
 import { ScreenContainer } from "@components/common/ScreenContainer";
 import { Button } from "@components/ui/Button";
-import { auth } from "@firebase-config/firebaseConfig";
-import { resendVerificationEmail } from "@firebase-config/authService";
+import { supabase } from "@supabase/supabaseClient";
+import { resendVerificationEmail } from "@supabase/authService";
 
 export const VerifyEmailScreen: React.FC = () => {
   const [sending, setSending] = useState(false);
   const [checking, setChecking] = useState(false);
+  const [email, setEmail] = useState<string | null>(null);
+
+  // E-Mail des aktuellen Nutzers laden
+  React.useEffect(() => {
+    supabase.auth.getUser().then(({ data }) => {
+      setEmail(data.user?.email ?? null);
+    });
+  }, []);
 
   const handleResend = async () => {
-    if (!auth.currentUser) return;
     setSending(true);
     try {
-      await resendVerificationEmail(auth.currentUser);
+      await resendVerificationEmail();
     } finally {
       setSending(false);
     }
@@ -28,8 +35,10 @@ export const VerifyEmailScreen: React.FC = () => {
   const handleContinue = async () => {
     setChecking(true);
     try {
-      await auth.currentUser?.reload();
-      if (auth.currentUser?.emailVerified) {
+      // Session neu laden – Supabase aktualisiert confirmed_at nach Bestätigung
+      await supabase.auth.refreshSession();
+      const { data } = await supabase.auth.getUser();
+      if (data.user?.confirmed_at) {
         router.replace("/(tabs)/home");
       }
     } finally {
@@ -47,9 +56,8 @@ export const VerifyEmailScreen: React.FC = () => {
           Bestätige deine E-Mail
         </Text>
         <Text className="mb-8 text-center font-poppins text-sm text-textSecondary">
-          Wir haben dir einen Bestätigungslink an{" "}
-          {auth.currentUser?.email ?? "deine E-Mail-Adresse"} gesendet. Bitte klicke darauf, um
-          fortzufahren.
+          Wir haben dir einen Bestätigungslink an {email ?? "deine E-Mail-Adresse"} gesendet.
+          Bitte klicke darauf, um fortzufahren.
         </Text>
 
         <Button label="Ich habe bestätigt" onPress={handleContinue} loading={checking} />

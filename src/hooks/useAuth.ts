@@ -1,11 +1,9 @@
 /**
  * Hook für Authentifizierungs-Logik & Session-Listener
+ * Ersetzt firebase-basierte useAuth.ts → nutzt jetzt Supabase
  */
 import { useEffect } from "react";
-import { doc, getDoc } from "firebase/firestore";
-
-import { subscribeToAuthChanges } from "@firebase-config/authService";
-import { firestore } from "@firebase-config/firebaseConfig";
+import { subscribeToAuthChanges } from "@supabase/authService";
 import { useAuthStore } from "@store/authStore";
 import type { UserProfile } from "@types";
 
@@ -13,24 +11,20 @@ export const useAuth = () => {
   const { user, isLoading, setUser, setLoading } = useAuthStore();
 
   useEffect(() => {
-    const unsubscribe = subscribeToAuthChanges(async (firebaseUser) => {
-      if (!firebaseUser) {
+    const unsubscribe = subscribeToAuthChanges((supabaseUser) => {
+      if (!supabaseUser) {
         setUser(null);
         setLoading(false);
         return;
       }
 
-      const profileSnap = await getDoc(doc(firestore, "users", firebaseUser.uid));
-      const profileData = profileSnap.data();
-
       const profile: UserProfile = {
-        uid: firebaseUser.uid,
-        name: firebaseUser.displayName ?? profileData?.name ?? "Nutzerin",
-        email: firebaseUser.email ?? "",
-        photoURL: firebaseUser.photoURL ?? undefined,
-        isPremium: profileData?.isPremium ?? false,
-        emailVerified: firebaseUser.emailVerified,
-        createdAt: profileData?.createdAt?.toDate?.().toISOString?.() ?? new Date().toISOString(),
+        uid: supabaseUser.id,
+        name: supabaseUser.name ?? "Nutzerin",
+        email: supabaseUser.email ?? "",
+        isPremium: false,
+        emailVerified: supabaseUser.emailVerified,
+        createdAt: new Date().toISOString(),
       };
 
       setUser(profile);
