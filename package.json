@@ -24,6 +24,13 @@
     "submit:ios": "eas submit --platform ios --latest",
     "build:ios:preview": "eas build --platform ios --profile preview"
   },
+  "expo": {
+    "doctor": {
+      "reactNativeDirectoryCheck": {
+        "exclude": ["clsx", "expo-av"]
+      }
+    }
+  },
   "dependencies": {
     "@expo-google-fonts/poppins": "^0.2.3",
     "@hookform/resolvers": "^3.9.1",
@@ -99,11 +106,4 @@
       "prettier --write"
     ]
   }
-  "expo": {
-  "doctor": {
-    "reactNativeDirectoryCheck": {
-      "exclude": ["clsx", "expo-av"]
-    }
-  }
-}
 }
