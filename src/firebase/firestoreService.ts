@@ -14,7 +14,7 @@ import {
 } from "firebase/firestore";
 
 import { firestore } from "./firebaseConfig";
-import type { TrustedContact, SosEvent, SafeWalkSession } from "@types/index";
+import type { TrustedContact, SosEvent, SafeWalkSession } from "@types";
 
 // --- Vertrauenspersonen ---
 export const getContacts = async (userId: string): Promise<TrustedContact[]> => {
