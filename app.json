@@ -3,6 +3,12 @@
     "name": "Women Save",
     "slug": "women-save",
     "scheme": "womensave",
+    "owner": "womensaver",
+    "extra": {
+      "router": { "origin": false },
+      "eas": {
+        "projectId": "488656bf-9be3-4f54-b1c2-d7f4ca451af2"   // ← ersetze REPLACE_WITH_EAS_PROJECT_ID
+      }
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
