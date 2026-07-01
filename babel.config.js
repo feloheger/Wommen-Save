@@ -15,6 +15,7 @@ module.exports = function (api) {
             "@screens": "./src/screens",
             "@hooks": "./src/hooks",
             "@services": "./src/services",
+            "@supabase": "./src/supabase",     // ← NEU
             "@firebase-config": "./src/firebase",
             "@constants": "./src/constants",
             "@types": "./src/types",
