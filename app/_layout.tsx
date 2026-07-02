@@ -1,6 +1,3 @@
-/**
- * Root Layout – lädt Schriftarten, initialisiert React Query & Auth
- */
 import React, { useEffect } from "react";
 import { Stack } from "expo-router";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -14,7 +11,6 @@ import {
   Poppins_700Bold,
 } from "@expo-google-fonts/poppins";
 
-import { useAuth } from "@hooks/useAuth";
 import { useSettingsStore } from "@store/settingsStore";
 import "../src/styles/global.css";
 
@@ -30,7 +26,6 @@ export default function RootLayout() {
     Poppins_700Bold,
   });
 
-  const { isLoading } = useAuth();
   const hydrateSettings = useSettingsStore((s) => s.hydrate);
 
   useEffect(() => {
@@ -38,18 +33,17 @@ export default function RootLayout() {
   }, [hydrateSettings]);
 
   useEffect(() => {
-    if (fontsLoaded && !isLoading) {
+    if (fontsLoaded) {
       SplashScreen.hideAsync();
     }
-  }, [fontsLoaded, isLoading]);
+  }, [fontsLoaded]);
 
-  if (!fontsLoaded || isLoading) return null;
+  if (!fontsLoaded) return null;
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <QueryClientProvider client={queryClient}>
         <Stack screenOptions={{ headerShown: false }}>
-          <Stack.Screen name="(auth)" />
           <Stack.Screen name="(tabs)" />
           <Stack.Screen name="sos" options={{ presentation: "fullScreenModal" }} />
           <Stack.Screen name="safe-walk" />

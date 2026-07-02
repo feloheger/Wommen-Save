@@ -1,25 +1,13 @@
-/**
- * Einstellungen Screen – Supabase statt Firebase für Logout
- */
 import React from "react";
 import { View, Text, Switch, Pressable, Linking } from "react-native";
 import { router } from "expo-router";
 import {
-  Moon,
-  Globe,
-  Shield,
-  Bell,
-  User,
-  Crown,
-  HelpCircle,
-  LogOut,
-  ChevronRight,
+  Moon, Globe, Shield, Bell, User, Crown, HelpCircle, ChevronRight,
 } from "lucide-react-native";
 
 import { ScreenContainer } from "@components/common/ScreenContainer";
 import { Card } from "@components/ui/Card";
 import { useSettingsStore } from "@store/settingsStore";
-import { logoutUser } from "@supabaseConfig/authService";
 import { SUPPORT_EMAIL, PRIVACY_URL } from "@constants/config";
 
 interface RowProps {
@@ -45,19 +33,7 @@ const SettingsRow: React.FC<RowProps> = ({ icon, label, right, onPress }) => (
 );
 
 export const SettingsScreen: React.FC = () => {
-  const {
-    darkMode,
-    notificationsEnabled,
-    language,
-    setDarkMode,
-    setNotificationsEnabled,
-    setLanguage,
-  } = useSettingsStore();
-
-  const handleLogout = async () => {
-    await logoutUser();
-    router.replace("/(auth)/login");
-  };
+  const { darkMode, notificationsEnabled, language, setDarkMode, setNotificationsEnabled, setLanguage } = useSettingsStore();
 
   return (
     <ScreenContainer>
@@ -103,14 +79,6 @@ export const SettingsScreen: React.FC = () => {
           onPress={() => Linking.openURL(`mailto:${SUPPORT_EMAIL}`)}
         />
       </Card>
-
-      <Pressable
-        onPress={handleLogout}
-        className="flex-row items-center justify-center rounded-2xl bg-accent py-4"
-      >
-        <LogOut size={18} color="#FF4D6A" />
-        <Text className="ml-2 font-poppins-semibold text-sm text-danger">Abmelden</Text>
-      </Pressable>
     </ScreenContainer>
   );
 };
