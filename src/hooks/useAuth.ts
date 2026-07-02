@@ -3,7 +3,7 @@
  * Ersetzt firebase-basierte useAuth.ts → nutzt jetzt Supabase
  */
 import { useEffect } from "react";
-import { subscribeToAuthChanges } from "@supabase/authService";
+import { subscribeToAuthChanges } from "@supabaseConfig/authService";
 import { useAuthStore } from "@store/authStore";
 import type { UserProfile } from "@types";
 

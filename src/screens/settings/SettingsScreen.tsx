@@ -19,7 +19,7 @@ import {
 import { ScreenContainer } from "@components/common/ScreenContainer";
 import { Card } from "@components/ui/Card";
 import { useSettingsStore } from "@store/settingsStore";
-import { logoutUser } from "@supabase/authService";
+import { logoutUser } from "@supabaseConfig/authService";
 import { SUPPORT_EMAIL, PRIVACY_URL } from "@constants/config";
 
 interface RowProps {

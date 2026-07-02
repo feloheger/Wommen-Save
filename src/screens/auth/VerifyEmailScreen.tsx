@@ -8,8 +8,8 @@ import { MailCheck } from "lucide-react-native";
 
 import { ScreenContainer } from "@components/common/ScreenContainer";
 import { Button } from "@components/ui/Button";
-import { supabase } from "@supabase/supabaseClient";
-import { resendVerificationEmail } from "@supabase/authService";
+import { supabase } from "@supabaseConfig/supabaseClient";
+import { resendVerificationEmail } from "@supabaseConfig/authService";
 
 export const VerifyEmailScreen: React.FC = () => {
   const [sending, setSending] = useState(false);

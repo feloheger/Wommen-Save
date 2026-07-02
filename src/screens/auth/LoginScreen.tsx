@@ -12,7 +12,7 @@ import { ScreenContainer } from "@components/common/ScreenContainer";
 import { Input } from "@components/ui/Input";
 import { Button } from "@components/ui/Button";
 import { loginSchema, type LoginFormData } from "@utils/validation";
-import { loginUser } from "@supabase/authService";
+import { loginUser } from "@supabaseConfig/authService";
 
 export const LoginScreen: React.FC = () => {
   const [loading, setLoading] = useState(false);

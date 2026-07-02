@@ -12,7 +12,7 @@ import { ScreenContainer } from "@components/common/ScreenContainer";
 import { Input } from "@components/ui/Input";
 import { Button } from "@components/ui/Button";
 import { resetPasswordSchema, type ResetPasswordFormData } from "@utils/validation";
-import { requestPasswordReset } from "@supabase/authService";
+import { requestPasswordReset } from "@supabaseConfig/authService";
 
 export const ForgotPasswordScreen: React.FC = () => {
   const [loading, setLoading] = useState(false);
