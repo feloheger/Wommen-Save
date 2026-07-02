@@ -1,9 +1,8 @@
 /**
  * Hook für Authentifizierungs-Logik & Session-Listener
- * Ersetzt firebase-basierte useAuth.ts → nutzt jetzt Supabase
  */
 import { useEffect } from "react";
-import { subscribeToAuthChanges } from "@supabaseConfig/authService";
+import { supabase } from "@supabaseConfig/supabaseClient";
 import { useAuthStore } from "@store/authStore";
 import type { UserProfile } from "@types";
 
@@ -11,37 +10,45 @@ export const useAuth = () => {
   const { user, isLoading, setUser, setLoading } = useAuthStore();
 
   useEffect(() => {
-    // Fallback: nach 3 Sekunden isLoading auf false setzen
-    const timeout = setTimeout(() => {
-      setLoading(false);
-    }, 3000);
-
-    const unsubscribe = subscribeToAuthChanges((supabaseUser) => {
-      clearTimeout(timeout);
-
-      if (!supabaseUser) {
+    // Direkt beim Start Session prüfen
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (!session?.user) {
         setUser(null);
         setLoading(false);
         return;
       }
-
       const profile: UserProfile = {
-        uid: supabaseUser.id,
-        name: supabaseUser.name ?? "Nutzerin",
-        email: supabaseUser.email ?? "",
+        uid: session.user.id,
+        name: session.user.user_metadata?.name ?? "Nutzerin",
+        email: session.user.email ?? "",
         isPremium: false,
-        emailVerified: supabaseUser.emailVerified,
+        emailVerified: !!session.user.confirmed_at,
         createdAt: new Date().toISOString(),
       };
-
       setUser(profile);
       setLoading(false);
     });
 
-    return () => {
-      clearTimeout(timeout);
-      unsubscribe();
-    };
+    // Auth-Änderungen beobachten
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (!session?.user) {
+        setUser(null);
+        setLoading(false);
+        return;
+      }
+      const profile: UserProfile = {
+        uid: session.user.id,
+        name: session.user.user_metadata?.name ?? "Nutzerin",
+        email: session.user.email ?? "",
+        isPremium: false,
+        emailVerified: !!session.user.confirmed_at,
+        createdAt: new Date().toISOString(),
+      };
+      setUser(profile);
+      setLoading(false);
+    });
+
+    return () => subscription.unsubscribe();
   }, [setUser, setLoading]);
 
   return { user, isLoading, isAuthenticated: !!user };
