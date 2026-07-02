@@ -11,7 +11,14 @@ export const useAuth = () => {
   const { user, isLoading, setUser, setLoading } = useAuthStore();
 
   useEffect(() => {
+    // Fallback: nach 3 Sekunden isLoading auf false setzen
+    const timeout = setTimeout(() => {
+      setLoading(false);
+    }, 3000);
+
     const unsubscribe = subscribeToAuthChanges((supabaseUser) => {
+      clearTimeout(timeout);
+
       if (!supabaseUser) {
         setUser(null);
         setLoading(false);
@@ -31,7 +38,10 @@ export const useAuth = () => {
       setLoading(false);
     });
 
-    return unsubscribe;
+    return () => {
+      clearTimeout(timeout);
+      unsubscribe();
+    };
   }, [setUser, setLoading]);
 
   return { user, isLoading, isAuthenticated: !!user };
