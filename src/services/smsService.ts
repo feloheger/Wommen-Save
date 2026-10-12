@@ -1,23 +1,32 @@
 /**
- * SMS-Service – bereitet Notfall-Nachrichten vor und versendet sie
+ * SMS – öffnet den System-Composer mit vorbereiteter Nachricht.
+ * Hinweis: Apps dürfen SMS nicht still versenden; die Person muss im Composer auf "Senden" tippen.
  */
 import * as SMS from "expo-sms";
-import type { LocationPoint, TrustedContact } from "@types/index";
-import { buildGoogleMapsLink } from "./locationService";
 
-export const buildSosMessage = (userName: string, location: LocationPoint | null): string => {
-  const mapsLink = location ? buildGoogleMapsLink(location) : "Standort nicht verfügbar";
-  return `🚨 NOTFALL: ${userName} benötigt Hilfe!\nStandort: ${mapsLink}\nGesendet über Women Save.`;
+import { APP_NAME } from "@/constants";
+import { buildMapsLink } from "@/services/locationService";
+import type { LocationPoint, TrustedContact } from "@/types";
+
+export const buildSosMessage = (location: LocationPoint | null): string => {
+  const where = location ? buildMapsLink(location) : "Standort leider nicht verfügbar";
+  return `🚨 NOTFALL: Ich brauche Hilfe!\nMein Standort: ${where}\nGesendet über ${APP_NAME}.`;
 };
 
-export const sendSosSms = async (
-  contacts: TrustedContact[],
-  message: string,
-): Promise<boolean> => {
-  const isAvailable = await SMS.isAvailableAsync();
-  if (!isAvailable) return false;
+export const buildShareMessage = (location: LocationPoint): string =>
+  `📍 Mein aktueller Standort: ${buildMapsLink(location)}\nGeteilt über ${APP_NAME}.`;
 
-  const numbers = contacts.map((c) => c.phone);
-  const { result } = await SMS.sendSMSAsync(numbers, message);
-  return result === "sent" || result === "unknown";
+/** true, wenn der Composer geöffnet und nicht abgebrochen wurde */
+export const composeSms = async (contacts: TrustedContact[], message: string): Promise<boolean> => {
+  try {
+    if (contacts.length === 0) return false;
+    if (!(await SMS.isAvailableAsync())) return false;
+    const { result } = await SMS.sendSMSAsync(
+      contacts.map((c) => c.phone),
+      message,
+    );
+    return result !== "cancelled";
+  } catch {
+    return false;
+  }
 };

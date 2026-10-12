@@ -1,28 +1,18 @@
-import { loginSchema, registerSchema, contactSchema } from "@utils/validation";
+import { contactSchema } from "@/utils/validation";
 
-describe("validation schemas", () => {
-  it("validiert ein korrektes Login-Formular", () => {
-    const result = loginSchema.safeParse({ email: "test@example.com", password: "123456" });
-    expect(result.success).toBe(true);
+describe("contactSchema", () => {
+  it("akzeptiert einen gültigen Kontakt und normalisiert die Nummer", () => {
+    const r = contactSchema.safeParse({ name: "Lena", phone: "+49 151 2345678" });
+    expect(r.success).toBe(true);
+    if (r.success) expect(r.data.phone).toBe("+491512345678");
   });
 
-  it("lehnt eine ungültige E-Mail beim Login ab", () => {
-    const result = loginSchema.safeParse({ email: "keine-email", password: "123456" });
-    expect(result.success).toBe(false);
+  it("lehnt zu kurze Namen ab", () => {
+    expect(contactSchema.safeParse({ name: "L", phone: "+491512345678" }).success).toBe(false);
   });
 
-  it("lehnt nicht übereinstimmende Passwörter bei der Registrierung ab", () => {
-    const result = registerSchema.safeParse({
-      name: "Anna",
-      email: "anna@example.com",
-      password: "123456",
-      confirmPassword: "654321",
-    });
-    expect(result.success).toBe(false);
-  });
-
-  it("validiert einen korrekten Kontakt", () => {
-    const result = contactSchema.safeParse({ name: "Lea", phone: "+491234567" });
-    expect(result.success).toBe(true);
+  it("lehnt ungültige Nummern ab", () => {
+    expect(contactSchema.safeParse({ name: "Lena", phone: "abc" }).success).toBe(false);
+    expect(contactSchema.safeParse({ name: "Lena", phone: "123" }).success).toBe(false);
   });
 });

@@ -1,11 +1,11 @@
 /**
- * Tab-Navigation – Home, Kontakte, Einstellungen
+ * Tab-Navigation – Home, Karte, Kontakte, Mehr (wie im Mockup)
  */
 import React from "react";
 import { Tabs } from "expo-router";
-import { Home, Users, Settings } from "lucide-react-native";
+import { Home, MapPin, Menu, Users } from "lucide-react-native";
 
-import { Colors } from "@constants/colors";
+import { Colors, Fonts } from "@/theme";
 
 export default function TabsLayout() {
   return (
@@ -13,33 +13,35 @@ export default function TabsLayout() {
       screenOptions={{
         headerShown: false,
         tabBarActiveTintColor: Colors.primary,
-        tabBarInactiveTintColor: Colors.textSecondary,
+        tabBarInactiveTintColor: Colors.textMuted,
         tabBarStyle: {
-          borderTopColor: Colors.border,
-          height: 64,
+          backgroundColor: Colors.card,
+          borderTopColor: Colors.cardBorder,
+          height: 66,
           paddingTop: 8,
           paddingBottom: 10,
         },
-        tabBarLabelStyle: { fontFamily: "Poppins_500Medium", fontSize: 11 },
+        tabBarLabelStyle: { fontFamily: Fonts.medium, fontSize: 10.5 },
       }}
     >
       <Tabs.Screen
         name="home"
-        options={{ title: "Home", tabBarIcon: ({ color, size }) => <Home color={color} size={size} /> }}
+        options={{ title: "Home", tabBarIcon: ({ color }) => <Home color={color} size={22} /> }}
+      />
+      <Tabs.Screen
+        name="map"
+        options={{ title: "Karte", tabBarIcon: ({ color }) => <MapPin color={color} size={22} /> }}
       />
       <Tabs.Screen
         name="contacts"
         options={{
           title: "Kontakte",
-          tabBarIcon: ({ color, size }) => <Users color={color} size={size} />,
+          tabBarIcon: ({ color }) => <Users color={color} size={22} />,
         }}
       />
       <Tabs.Screen
-        name="settings"
-        options={{
-          title: "Einstellungen",
-          tabBarIcon: ({ color, size }) => <Settings color={color} size={size} />,
-        }}
+        name="more"
+        options={{ title: "Mehr", tabBarIcon: ({ color }) => <Menu color={color} size={22} /> }}
       />
     </Tabs>
   );

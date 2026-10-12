@@ -1,2 +1,2 @@
-import { AlarmScreen } from "@screens/alarm/AlarmScreen";
+import { AlarmScreen } from "@/screens/AlarmScreen";
 export default AlarmScreen;

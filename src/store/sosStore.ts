@@ -1,24 +1,30 @@
 /**
- * Zustand Store – SOS Status
+ * SOS-Ablauf: countdown -> sending -> done
  */
 import { create } from "zustand";
-import type { SosStatus, LocationPoint } from "@types/index";
+
+import type { LocationPoint, SosStatus } from "@/types";
+
+export interface SosResult {
+  location: LocationPoint | null;
+  contactCount: number;
+  smsComposed: boolean;
+}
 
 interface SosState {
   status: SosStatus;
-  location: LocationPoint | null;
-  triggeredAt: number | null;
-  triggerSos: (location: LocationPoint | null) => void;
-  resolveSos: () => void;
+  result: SosResult | null;
+  startCountdown: () => void;
+  setSending: () => void;
+  finish: (result: SosResult) => void;
   reset: () => void;
 }
 
 export const useSosStore = create<SosState>((set) => ({
   status: "idle",
-  location: null,
-  triggeredAt: null,
-  triggerSos: (location) =>
-    set({ status: "triggered", location, triggeredAt: Date.now() }),
-  resolveSos: () => set({ status: "resolved" }),
-  reset: () => set({ status: "idle", location: null, triggeredAt: null }),
+  result: null,
+  startCountdown: () => set({ status: "countdown", result: null }),
+  setSending: () => set({ status: "sending" }),
+  finish: (result) => set({ status: "done", result }),
+  reset: () => set({ status: "idle", result: null }),
 }));

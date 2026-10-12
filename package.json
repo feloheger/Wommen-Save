@@ -1,6 +1,6 @@
 {
   "name": "women-save",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "private": true,
   "main": "expo-router/entry",
   "scripts": {
@@ -9,7 +9,7 @@
     "ios": "expo start --ios",
     "web": "expo start --web",
     "prebuild": "expo prebuild",
-    "build:android": "eas build --platform android",
+    "build:android": "eas build --platform android --profile preview",
     "build:ios": "eas build --platform ios",
     "lint": "eslint . --ext .ts,.tsx",
     "lint:fix": "eslint . --ext .ts,.tsx --fix",
@@ -19,25 +19,15 @@
     "test": "jest",
     "test:watch": "jest --watch",
     "test:ci": "jest --ci --coverage",
-    "prepare": "husky",
-    "postinstall": "expo install --fix -- --non-interactive || true",
-    "submit:ios": "eas submit --platform ios --latest",
-    "build:ios:preview": "eas build --platform ios --profile preview"
+    "prepare": "husky || true",
+    "submit:ios": "eas submit --platform ios --latest"
   },
   "dependencies": {
     "@expo-google-fonts/poppins": "^0.2.3",
-    "@hookform/resolvers": "^3.9.1",
     "@react-native-async-storage/async-storage": "1.23.1",
-    "@react-navigation/native": "^7.0.0",
-    "@tanstack/react-query": "^5.59.0",
-    "clsx": "^2.1.1",
     "expo": "~52.0.0",
-    "expo-application": "~6.0.0",
     "expo-av": "~15.0.0",
-    "expo-blur": "~14.0.0",
     "expo-constants": "~17.0.0",
-    "expo-contacts": "~14.0.0",
-    "expo-device": "~7.0.0",
     "expo-font": "~13.0.0",
     "expo-haptics": "~14.0.0",
     "expo-linear-gradient": "~14.0.0",
@@ -45,16 +35,12 @@
     "expo-location": "~18.0.0",
     "expo-notifications": "~0.29.0",
     "expo-router": "~4.0.0",
-    "expo-secure-store": "~14.0.0",
     "expo-sms": "~13.0.0",
     "expo-splash-screen": "~0.29.0",
     "expo-status-bar": "~2.0.0",
-    
     "lucide-react-native": "^0.460.0",
-    "nativewind": "^4.1.23",
     "react": "18.3.1",
     "react-dom": "18.3.1",
-    "react-hook-form": "^7.53.2",
     "react-native": "0.76.3",
     "react-native-gesture-handler": "~2.20.2",
     "react-native-maps": "1.18.0",
@@ -62,7 +48,6 @@
     "react-native-safe-area-context": "4.12.0",
     "react-native-screens": "~4.4.0",
     "react-native-svg": "15.8.0",
-    "tailwindcss": "^3.4.14",
     "zod": "^3.23.8",
     "zustand": "^5.0.1"
   },
@@ -70,11 +55,9 @@
     "@babel/core": "^7.25.2",
     "@commitlint/cli": "^19.5.0",
     "@commitlint/config-conventional": "^19.5.0",
-    "@testing-library/jest-native": "^5.4.3",
     "@testing-library/react-native": "^12.7.2",
     "@types/jest": "^29.5.13",
     "@types/react": "~18.3.12",
-    "babel-plugin-module-resolver": "^5.0.2",
     "eslint": "^8.57.0",
     "eslint-config-expo": "^8.0.1",
     "eslint-config-prettier": "^9.1.0",
@@ -88,7 +71,11 @@
     "typescript": "~5.3.3"
   },
   "overrides": {
-    "react": "18.3.1"
+    "react": "18.3.1",
+    "@react-navigation/native": "7.0.19",
+    "@react-navigation/core": "~7.1.2",
+    "@react-navigation/bottom-tabs": "7.2.1",
+    "@react-navigation/native-stack": "7.2.1"
   },
   "lint-staged": {
     "*.{ts,tsx}": [

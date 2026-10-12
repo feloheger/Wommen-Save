@@ -1,81 +1,55 @@
 {
   "expo": {
     "name": "Women Save",
-    "slug": "women-save",
+    "slug": "womensaver",
+    "owner": "womensavers-team",
     "scheme": "womensave",
-    "version": "1.0.0",
+    "version": "1.1.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "userInterfaceStyle": "automatic",
+    "userInterfaceStyle": "light",
     "newArchEnabled": true,
     "splash": {
       "image": "./assets/images/splash.png",
       "resizeMode": "contain",
-      "backgroundColor": "#7C5CFC"
+      "backgroundColor": "#6B2D5C"
     },
     "assetBundlePatterns": ["**/*"],
     "ios": {
-      "supportsTablet": true,
+      "supportsTablet": false,
       "bundleIdentifier": "com.womensave.app",
-      "buildNumber": "1.0.0",
-      "config": {
-        "usesNonExemptEncryption": false
-      },
+      "config": { "usesNonExemptEncryption": false },
       "infoPlist": {
-        "NSLocationWhenInUseUsageDescription": "Women Save benötigt deinen Standort, um dich bei einem Notfall zu orten und deinen Vertrauenspersonen mitzuteilen.",
-        "NSLocationAlwaysAndWhenInUseUsageDescription": "Women Save nutzt deinen Standort im Hintergrund, um deinen Safe Walk live zu verfolgen.",
-        "NSContactsUsageDescription": "Women Save benötigt Zugriff auf deine Kontakte, um Vertrauenspersonen hinzuzufügen.",
-        "UIBackgroundModes": ["location", "remote-notification"]
+        "NSLocationWhenInUseUsageDescription": "Women Save nutzt deinen Standort, um dich im Notfall zu orten, sichere Orte in deiner Nähe zu zeigen und deine Vertrauenspersonen zu informieren."
       }
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
-        "backgroundColor": "#7C5CFC"
+        "backgroundColor": "#6B2D5C"
       },
       "package": "com.womensave.app",
       "permissions": [
         "ACCESS_FINE_LOCATION",
         "ACCESS_COARSE_LOCATION",
-        "ACCESS_BACKGROUND_LOCATION",
-        "READ_CONTACTS",
-        "SEND_SMS",
         "VIBRATE",
-        "RECEIVE_BOOT_COMPLETED",
         "POST_NOTIFICATIONS"
       ]
     },
     "plugins": [
       "expo-router",
-      "expo-secure-store",
       "expo-font",
       [
         "expo-location",
         {
-          "locationAlwaysAndWhenInUsePermission": "Women Save nutzt deinen Standort, um dich im Notfall zu schützen."
+          "locationWhenInUsePermission": "Women Save nutzt deinen Standort, um dich im Notfall zu schützen."
         }
       ],
-      [
-        "expo-notifications",
-        {
-          "icon": "./assets/images/notification-icon.png",
-          "color": "#7C5CFC"
-        }
-      ],
-      [
-        "expo-contacts",
-        {
-          "contactsPermission": "Women Save benötigt Zugriff auf deine Kontakte, um Vertrauenspersonen hinzuzufügen."
-        }
-      ]
+      ["expo-notifications", { "color": "#8B3A62" }]
     ],
     "extra": {
-      "router": {
-        "origin": false
-      },
-      "eas": {
-        "projectId": "REPLACE_WITH_EAS_PROJECT_ID"
-      }
+      "router": { "origin": false },
+      "eas": { "projectId": "488656bf-9be3-4f54-b1c2-d7f4ca451af2" }
     }
   }
 }

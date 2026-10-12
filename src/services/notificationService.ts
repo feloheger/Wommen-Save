@@ -1,49 +1,73 @@
 /**
- * Push-Benachrichtigungen via Expo Notifications
+ * Lokale Benachrichtigungen (kein Push-Backend nötig)
  */
 import * as Notifications from "expo-notifications";
-import * as Device from "expo-device";
 import { Platform } from "react-native";
+
+import { useSettingsStore } from "@/store/settingsStore";
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
     shouldShowAlert: true,
     shouldPlaySound: true,
     shouldSetBadge: false,
-    shouldShowBanner: true,
-    shouldShowList: true,
   }),
 });
 
-export const registerForPushNotifications = async (): Promise<string | null> => {
-  if (!Device.isDevice) return null;
+let channelReady = false;
 
-  const { status: existingStatus } = await Notifications.getPermissionsAsync();
-  let finalStatus = existingStatus;
-
-  if (existingStatus !== "granted") {
-    const { status } = await Notifications.requestPermissionsAsync();
-    finalStatus = status;
+export const ensureNotificationSetup = async (): Promise<boolean> => {
+  try {
+    if (Platform.OS === "android" && !channelReady) {
+      await Notifications.setNotificationChannelAsync("default", {
+        name: "Women Save",
+        importance: Notifications.AndroidImportance.MAX,
+        vibrationPattern: [0, 250, 250, 250],
+        lightColor: "#8B3A62",
+      });
+      channelReady = true;
+    }
+    const existing = await Notifications.getPermissionsAsync();
+    if (existing.granted) return true;
+    const asked = await Notifications.requestPermissionsAsync();
+    return asked.granted;
+  } catch {
+    return false;
   }
-
-  if (finalStatus !== "granted") return null;
-
-  if (Platform.OS === "android") {
-    await Notifications.setNotificationChannelAsync("default", {
-      name: "default",
-      importance: Notifications.AndroidImportance.MAX,
-      vibrationPattern: [0, 250, 250, 250],
-      lightColor: "#7C5CFC",
-    });
-  }
-
-  const token = (await Notifications.getExpoPushTokenAsync()).data;
-  return token;
 };
 
-export const scheduleLocalAlert = async (title: string, body: string) => {
-  await Notifications.scheduleNotificationAsync({
-    content: { title, body, sound: true },
-    trigger: null,
-  });
+export const showNow = async (title: string, body: string): Promise<void> => {
+  try {
+    if (!useSettingsStore.getState().notificationsEnabled) return;
+    if (!(await ensureNotificationSetup())) return;
+    await Notifications.scheduleNotificationAsync({
+      content: { title, body, sound: true },
+      trigger: null,
+    });
+  } catch {
+    /* Benachrichtigung ist nur ein Zusatz – nie den Ablauf blockieren */
+  }
+};
+
+/** Plant eine Benachrichtigung für einen Zeitpunkt; gibt die ID zum Abbrechen zurück. */
+export const scheduleAt = async (title: string, body: string, at: Date): Promise<string | null> => {
+  try {
+    if (!useSettingsStore.getState().notificationsEnabled) return null;
+    if (!(await ensureNotificationSetup())) return null;
+    return await Notifications.scheduleNotificationAsync({
+      content: { title, body, sound: true },
+      trigger: { type: Notifications.SchedulableTriggerInputTypes.DATE, date: at },
+    });
+  } catch {
+    return null;
+  }
+};
+
+export const cancelScheduled = async (id: string | null): Promise<void> => {
+  if (!id) return;
+  try {
+    await Notifications.cancelScheduledNotificationAsync(id);
+  } catch {
+    /* ignorieren */
+  }
 };

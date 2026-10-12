@@ -1,2 +1,2 @@
-import { FakeCallScreen } from "@screens/fakecall/FakeCallScreen";
+import { FakeCallScreen } from "@/screens/FakeCallScreen";
 export default FakeCallScreen;

@@ -1,46 +1,29 @@
 /**
- * Zustand Store – App-Einstellungen (persistiert via SecureStore)
+ * Einstellungen & Premium-Status – persistiert in AsyncStorage
  */
 import { create } from "zustand";
-import * as SecureStore from "expo-secure-store";
+import { createJSONStorage, persist } from "zustand/middleware";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 interface SettingsState {
-  darkMode: boolean;
-  language: "de" | "en";
+  hasOnboarded: boolean;
   notificationsEnabled: boolean;
-  setDarkMode: (value: boolean) => void;
-  setLanguage: (lang: "de" | "en") => void;
+  isPremium: boolean;
+  completeOnboarding: () => void;
   setNotificationsEnabled: (value: boolean) => void;
-  hydrate: () => Promise<void>;
+  setPremium: (value: boolean) => void;
 }
 
-export const useSettingsStore = create<SettingsState>((set, get) => ({
-  darkMode: false,
-  language: "de",
-  notificationsEnabled: true,
-  setDarkMode: (value) => {
-    set({ darkMode: value });
-    SecureStore.setItemAsync("darkMode", JSON.stringify(value)).catch(() => {});
-  },
-  setLanguage: (lang) => {
-    set({ language: lang });
-    SecureStore.setItemAsync("language", lang).catch(() => {});
-  },
-  setNotificationsEnabled: (value) => {
-    set({ notificationsEnabled: value });
-    SecureStore.setItemAsync("notificationsEnabled", JSON.stringify(value)).catch(() => {});
-  },
-  hydrate: async () => {
-    const [darkMode, language, notificationsEnabled] = await Promise.all([
-      SecureStore.getItemAsync("darkMode"),
-      SecureStore.getItemAsync("language"),
-      SecureStore.getItemAsync("notificationsEnabled"),
-    ]);
-    set({
-      darkMode: darkMode ? JSON.parse(darkMode) : false,
-      language: (language as "de" | "en") ?? "de",
-      notificationsEnabled: notificationsEnabled ? JSON.parse(notificationsEnabled) : true,
-    });
-    void get; // keep get referenced for future use
-  },
-}));
+export const useSettingsStore = create<SettingsState>()(
+  persist(
+    (set) => ({
+      hasOnboarded: false,
+      notificationsEnabled: true,
+      isPremium: false,
+      completeOnboarding: () => set({ hasOnboarded: true }),
+      setNotificationsEnabled: (notificationsEnabled) => set({ notificationsEnabled }),
+      setPremium: (isPremium) => set({ isPremium }),
+    }),
+    { name: "ws-settings", storage: createJSONStorage(() => AsyncStorage) },
+  ),
+);

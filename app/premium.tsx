@@ -1,2 +1,2 @@
-import { PremiumScreen } from "@screens/premium/PremiumScreen";
+import { PremiumScreen } from "@/screens/PremiumScreen";
 export default PremiumScreen;

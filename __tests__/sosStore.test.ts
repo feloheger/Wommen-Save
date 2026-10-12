@@ -1,23 +1,16 @@
-import { useSosStore } from "@store/sosStore";
+import { useSosStore } from "@/store/sosStore";
 
 describe("sosStore", () => {
-  beforeEach(() => {
-    useSosStore.getState().reset();
-  });
+  beforeEach(() => useSosStore.getState().reset());
 
-  it("startet im idle-Status", () => {
+  it("läuft idle -> countdown -> sending -> done", () => {
     expect(useSosStore.getState().status).toBe("idle");
-  });
-
-  it("setzt den Status korrekt nach triggerSos", () => {
-    useSosStore.getState().triggerSos({ latitude: 1, longitude: 2, timestamp: Date.now() });
-    expect(useSosStore.getState().status).toBe("triggered");
-    expect(useSosStore.getState().location?.latitude).toBe(1);
-  });
-
-  it("setzt den Status auf resolved", () => {
-    useSosStore.getState().triggerSos(null);
-    useSosStore.getState().resolveSos();
-    expect(useSosStore.getState().status).toBe("resolved");
+    useSosStore.getState().startCountdown();
+    expect(useSosStore.getState().status).toBe("countdown");
+    useSosStore.getState().setSending();
+    expect(useSosStore.getState().status).toBe("sending");
+    useSosStore.getState().finish({ location: null, contactCount: 2, smsComposed: true });
+    expect(useSosStore.getState().status).toBe("done");
+    expect(useSosStore.getState().result?.contactCount).toBe(2);
   });
 });

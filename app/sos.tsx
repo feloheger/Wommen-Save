@@ -1,2 +1,2 @@
-import { SosScreen } from "@screens/sos/SosScreen";
+import { SosScreen } from "@/screens/SosScreen";
 export default SosScreen;

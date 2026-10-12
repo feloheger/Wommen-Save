@@ -1,24 +1,23 @@
 /**
  * Hilfsfunktionen zur Formatierung
  */
-export const formatDuration = (seconds: number): string => {
-  const mins = Math.floor(seconds / 60);
-  const secs = seconds % 60;
+
+/** Sekunden -> "m:ss" */
+export const formatClock = (totalSeconds: number): string => {
+  const safe = Math.max(0, Math.floor(totalSeconds));
+  const mins = Math.floor(safe / 60);
+  const secs = safe % 60;
   return `${mins}:${secs.toString().padStart(2, "0")}`;
 };
 
-export const getInitials = (name: string): string => {
-  return name
-    .split(" ")
-    .map((part) => part[0])
-    .slice(0, 2)
-    .join("")
-    .toUpperCase();
+export const getInitial = (name: string): string => {
+  const trimmed = name.trim();
+  return trimmed ? trimmed.charAt(0).toUpperCase() : "?";
 };
 
-export const avatarColors = ["#7C5CFC", "#B79CFF", "#FF4D6A", "#34C77B", "#FFB020"];
+/** Entfernt Leerzeichen/Klammern/Bindestriche – behält führendes "+" */
+export const normalizePhone = (value: string): string =>
+  value.replace(/[^\d+]/g, "").replace(/(?!^)\+/g, "");
 
-export const getAvatarColor = (seed: string): string => {
-  const index = seed.charCodeAt(0) % avatarColors.length;
-  return avatarColors[index];
-};
+export const makeId = (): string =>
+  `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`;

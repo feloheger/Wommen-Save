@@ -1,20 +1,20 @@
-import { formatDuration, getInitials, getAvatarColor } from "@utils/formatters";
+import { formatClock, getInitial, normalizePhone } from "@/utils/formatters";
 
 describe("formatters", () => {
-  it("formatiert Sekunden korrekt zu mm:ss", () => {
-    expect(formatDuration(65)).toBe("1:05");
-    expect(formatDuration(5)).toBe("0:05");
-    expect(formatDuration(600)).toBe("10:00");
+  it("formatiert Sekunden als m:ss", () => {
+    expect(formatClock(65)).toBe("1:05");
+    expect(formatClock(5)).toBe("0:05");
+    expect(formatClock(600)).toBe("10:00");
+    expect(formatClock(-3)).toBe("0:00");
   });
 
-  it("erzeugt Initialen aus einem Namen", () => {
-    expect(getInitials("Anna Müller")).toBe("AM");
-    expect(getInitials("Lea")).toBe("L");
+  it("liefert den Anfangsbuchstaben", () => {
+    expect(getInitial("lena")).toBe("L");
+    expect(getInitial("  ")).toBe("?");
   });
 
-  it("gibt für gleiche Eingaben dieselbe Avatarfarbe zurück", () => {
-    const colorA = getAvatarColor("Anna");
-    const colorB = getAvatarColor("Anna");
-    expect(colorA).toBe(colorB);
+  it("normalisiert Telefonnummern", () => {
+    expect(normalizePhone("+49 (151) 234-5678")).toBe("+491512345678");
+    expect(normalizePhone("0151 2345678")).toBe("01512345678");
   });
 });

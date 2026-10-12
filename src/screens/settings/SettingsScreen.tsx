@@ -19,7 +19,7 @@ import {
 import { ScreenContainer } from "@components/common/ScreenContainer";
 import { Card } from "@components/ui/Card";
 import { useSettingsStore } from "@store/settingsStore";
-import { logoutUser } from "@firebase-config/authService";
+import { useDeviceStore } from "@store/deviceStore";
 import { SUPPORT_EMAIL, PRIVACY_URL } from "@constants/config";
 
 interface RowProps {

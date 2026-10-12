@@ -1,59 +1,52 @@
-/**
- * Root Layout – lädt Schriftarten, initialisiert React Query & Geräte-Identität
- * (ersetzt app/_layout.tsx: useAuth -> useDevice, kein (auth)-Stack mehr nötig)
- */
 import React, { useEffect } from "react";
 import { Stack } from "expo-router";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { StatusBar } from "expo-status-bar";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { SafeAreaProvider } from "react-native-safe-area-context";
 import * as SplashScreen from "expo-splash-screen";
-import { useFonts, Poppins_400Regular, Poppins_500Medium, Poppins_600SemiBold, Poppins_700Bold } from "@expo-google-fonts/poppins";
+import {
+  useFonts,
+  Poppins_400Regular,
+  Poppins_500Medium,
+  Poppins_600SemiBold,
+  Poppins_700Bold,
+} from "@expo-google-fonts/poppins";
 
-import { useDevice } from "@hooks/useDevice";
-import { useSettingsStore } from "@store/settingsStore";
-import "../src/styles/global.css";
+import { useStoreHydrated } from "@/hooks/useStoreHydrated";
 
-SplashScreen.preventAutoHideAsync();
-
-const queryClient = new QueryClient();
+SplashScreen.preventAutoHideAsync().catch(() => {});
 
 export default function RootLayout() {
-  const [fontsLoaded] = useFonts({
+  const [fontsLoaded, fontError] = useFonts({
     Poppins_400Regular,
     Poppins_500Medium,
     Poppins_600SemiBold,
     Poppins_700Bold,
   });
-
-  // Initialisiert Device-ID + Expo Push Token, kein Login mehr nötig
-  const { isLoading } = useDevice();
-  const hydrateSettings = useSettingsStore((s) => s.hydrate);
-
-  useEffect(() => {
-    hydrateSettings();
-  }, [hydrateSettings]);
+  const hydrated = useStoreHydrated();
+  // Bei Font-Fehler trotzdem starten (Systemschrift), statt ewig im Splash zu hängen
+  const ready = (fontsLoaded || !!fontError) && hydrated;
 
   useEffect(() => {
-    if (fontsLoaded && !isLoading) {
-      SplashScreen.hideAsync();
-    }
-  }, [fontsLoaded, isLoading]);
+    if (ready) SplashScreen.hideAsync().catch(() => {});
+  }, [ready]);
 
-  if (!fontsLoaded || isLoading) return null;
+  if (!ready) return null;
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <QueryClientProvider client={queryClient}>
-        <Stack screenOptions={{ headerShown: false }}>
-          {/* (auth)-Gruppe entfällt komplett, da kein Login mehr existiert */}
+      <SafeAreaProvider>
+        <StatusBar style="dark" />
+        <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: "#FBF1F1" } }}>
+          <Stack.Screen name="index" />
           <Stack.Screen name="(tabs)" />
-          <Stack.Screen name="sos" options={{ presentation: "fullScreenModal" }} />
-          <Stack.Screen name="safe-walk" />
-          <Stack.Screen name="fake-call" />
-          <Stack.Screen name="alarm" />
-          <Stack.Screen name="premium" />
+          <Stack.Screen
+            name="sos"
+            options={{ presentation: "fullScreenModal", gestureEnabled: false }}
+          />
+          <Stack.Screen name="alarm" options={{ presentation: "fullScreenModal" }} />
         </Stack>
-      </QueryClientProvider>
+      </SafeAreaProvider>
     </GestureHandlerRootView>
   );
 }

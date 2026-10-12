@@ -1,10 +1,10 @@
-/**
- * Einstiegspunkt – leitet je nach Auth-Status weiter
- */
 import { Redirect } from "expo-router";
-import { useAuthStore } from "@store/authStore";
+
+import { WelcomeScreen } from "@/screens/WelcomeScreen";
+import { useSettingsStore } from "@/store/settingsStore";
 
 export default function Index() {
-  const { user } = useAuthStore();
-  return <Redirect href={user ? "/(tabs)/home" : "/(auth)/login"} />;
+  const hasOnboarded = useSettingsStore((s) => s.hasOnboarded);
+  if (hasOnboarded) return <Redirect href="/(tabs)/home" />;
+  return <WelcomeScreen />;
 }
