@@ -12,7 +12,12 @@ import {
   Poppins_700Bold,
 } from "@expo-google-fonts/poppins";
 
+<<<<<<< HEAD
 import { useStoreHydrated } from "@/hooks/useStoreHydrated";
+=======
+import { useSettingsStore } from "@store/settingsStore";
+import "../src/styles/global.css";
+>>>>>>> a4f96678eab6b731130c94eee79ed2eb4b7db73b
 
 SplashScreen.preventAutoHideAsync().catch(() => {});
 
@@ -23,14 +28,20 @@ export default function RootLayout() {
     Poppins_600SemiBold,
     Poppins_700Bold,
   });
+<<<<<<< HEAD
   const hydrated = useStoreHydrated();
   // Bei Font-Fehler trotzdem starten (Systemschrift), statt ewig im Splash zu hängen
   const ready = (fontsLoaded || !!fontError) && hydrated;
+=======
+
+  const hydrateSettings = useSettingsStore((s) => s.hydrate);
+>>>>>>> a4f96678eab6b731130c94eee79ed2eb4b7db73b
 
   useEffect(() => {
     if (ready) SplashScreen.hideAsync().catch(() => {});
   }, [ready]);
 
+<<<<<<< HEAD
   if (!ready) return null;
 
   return (
@@ -39,6 +50,20 @@ export default function RootLayout() {
         <StatusBar style="dark" />
         <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: "#FBF1F1" } }}>
           <Stack.Screen name="index" />
+=======
+  useEffect(() => {
+    if (fontsLoaded) {
+      SplashScreen.hideAsync();
+    }
+  }, [fontsLoaded]);
+
+  if (!fontsLoaded) return null;
+
+  return (
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <QueryClientProvider client={queryClient}>
+        <Stack screenOptions={{ headerShown: false }}>
+>>>>>>> a4f96678eab6b731130c94eee79ed2eb4b7db73b
           <Stack.Screen name="(tabs)" />
           <Stack.Screen
             name="sos"
