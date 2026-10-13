@@ -1,17 +1,10 @@
 name: Build APK
 
-<<<<<<< HEAD
 # Manuell auslösbar oder bei Versions-Tags (v*) – nicht mehr bei jedem Push.
 on:
   workflow_dispatch:
   push:
     tags: ["v*"]
-=======
-on:
-  push:
-    branches:
-      - main
->>>>>>> a4f96678eab6b731130c94eee79ed2eb4b7db73b
 
 jobs:
   build:
@@ -19,8 +12,6 @@ jobs:
     runs-on: ubuntu-latest
     env:
       EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
-<<<<<<< HEAD
-      GOOGLE_MAPS_API_KEY: ${{ secrets.GOOGLE_MAPS_API_KEY }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -31,24 +22,3 @@ jobs:
       - run: npm run typecheck && npm run test:ci
       - run: npm install -g eas-cli
       - run: eas build --platform android --profile preview --non-interactive
-=======
-      EXPO_PUBLIC_SUPABASE_URL: ${{ secrets.EXPO_PUBLIC_SUPABASE_URL }}
-      EXPO_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.EXPO_PUBLIC_SUPABASE_ANON_KEY }}
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 22.x
-
-      - name: Install EAS CLI
-        run: npm install -g eas-cli
-
-      - name: Install dependencies
-        run: npm install --legacy-peer-deps
-
-      - name: Build APK
-        run: EAS_NO_VCS=1 EXPO_NO_DOCTOR=1 eas build --platform android --profile preview --non-interactive
->>>>>>> a4f96678eab6b731130c94eee79ed2eb4b7db73b

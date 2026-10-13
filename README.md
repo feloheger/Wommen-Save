@@ -19,13 +19,12 @@ Kein Konto nötig: Alle Daten (Vertrauenspersonen, markierte Gefahrenzonen, Eins
 
 - **SOS** zeigt einen 5-Sekunden-Countdown (Abbruch möglich) und öffnet dann die SMS-App mit Standort-Link. Apps dürfen SMS nicht still senden – die Person muss „Senden“ tippen. Zusätzlich gibt es einen „112 anrufen“-Button.
 - **Premium**: Es ist noch kein Zahlungsanbieter angebunden. In Release-Builds wird kein Premium vergeben.
-- **Karte unter Android** braucht einen Google-Maps-API-Key (`GOOGLE_MAPS_API_KEY`, siehe `.env.example`).
+- **Karte**: Leaflet + OpenStreetMap in einer WebView – kein API-Key und keine Kreditkarte nötig. Die Karte braucht Internet (Kacheln von tile.openstreetmap.org, bei hoher Nutzung bitte eigenen Tile-Server verwenden).
 
 ## Entwicklung
 
 ```bash
 npm install --legacy-peer-deps
-cp .env.example .env     # Maps-Key eintragen (Android)
 npx expo start
 ```
 

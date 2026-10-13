@@ -1,4 +1,4 @@
-{ 
+{
   "expo": {
     "name": "Women Save",
     "slug": "womensaver",
@@ -45,34 +45,11 @@
           "locationWhenInUsePermission": "Women Save nutzt deinen Standort, um dich im Notfall zu schützen."
         }
       ],
-<<<<<<< HEAD
       ["expo-notifications", { "color": "#8B3A62" }]
     ],
     "extra": {
       "router": { "origin": false },
       "eas": { "projectId": "488656bf-9be3-4f54-b1c2-d7f4ca451af2" }
-=======
-      [
-        "expo-notifications",
-        {
-          "color": "#7C5CFC"
-        }
-      ],
-      [
-        "expo-contacts",
-        {
-          "contactsPermission": "Women Save benötigt Zugriff auf deine Kontakte, um Vertrauenspersonen hinzuzufügen."
-        }
-      ]
-    ],
-    "extra": {
-      "router": {
-        "origin": false
-      },
-      "eas": {
-        "projectId": "488656bf-9be3-4f54-b1c2-d7f4ca451af2"
-      }
->>>>>>> a4f96678eab6b731130c94eee79ed2eb4b7db73b
     }
   }
 }

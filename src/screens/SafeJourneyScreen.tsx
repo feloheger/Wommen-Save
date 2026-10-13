@@ -4,10 +4,10 @@
  */
 import React, { useEffect, useState } from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
-import MapView, { Marker, Polyline } from "react-native-maps";
 import { Clock, Navigation, ShieldCheck } from "lucide-react-native";
 import { router } from "expo-router";
 
+import { OsmMap } from "@/components/OsmMap";
 import { Screen } from "@/components/Screen";
 import { Card } from "@/components/Card";
 import { Button } from "@/components/Button";
@@ -93,18 +93,16 @@ export const SafeJourneyScreen: React.FC = () => {
     <Screen title="Safe-Journey-Modus" back scroll={false}>
       <View style={styles.mapBox}>
         {last ? (
-          <MapView
-            style={StyleSheet.absoluteFill}
-            region={{
+          <OsmMap
+            center={{
               latitude: last.latitude,
               longitude: last.longitude,
-              latitudeDelta: 0.01,
-              longitudeDelta: 0.01,
+              zoom: 16,
+              key: route.length,
             }}
-          >
-            <Marker coordinate={last} title="Aktueller Standort" pinColor={Colors.primary} />
-            <Polyline coordinates={route} strokeColor={Colors.primary} strokeWidth={4} />
-          </MapView>
+            user={last}
+            line={route}
+          />
         ) : (
           <View style={styles.mapWait}>
             <Text style={styles.sub}>Standort wird ermittelt …</Text>

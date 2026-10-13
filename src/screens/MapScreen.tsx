@@ -1,7 +1,7 @@
 /**
  * Karte – sichere Orte in der Nähe (OpenStreetMap-Daten), eigene Gefahrenzonen, Standort-Status
  */
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import {
   ActivityIndicator,
   Alert,
@@ -12,10 +12,10 @@ import {
   TextInput,
   View,
 } from "react-native";
-import MapView, { Circle, Marker, type Region } from "react-native-maps";
 import { ChevronRight, Heart, Search, ShieldCheck, TriangleAlert } from "lucide-react-native";
 import { router } from "expo-router";
 
+import { OsmMap, type OsmMarker } from "@/components/OsmMap";
 import { Screen } from "@/components/Screen";
 import { Card } from "@/components/Card";
 import { Colors, Fonts, Radius, Shadow } from "@/theme";
@@ -27,16 +27,22 @@ import { useShareStore } from "@/store/shareStore";
 import type { LocationPoint, SafePlace } from "@/types";
 import { makeId } from "@/utils/formatters";
 
-const DEFAULT_DELTA = 0.015;
+const FOCUS_ZOOM = 15;
 
 export const MapScreen: React.FC = () => {
-  const mapRef = useRef<MapView>(null);
+  const [center, setCenter] = useState<
+    { latitude: number; longitude: number; zoom: number; key: number } | undefined
+  >(undefined);
   const [me, setMe] = useState<LocationPoint | null>(null);
   const [places, setPlaces] = useState<SafePlace[]>([]);
   const [loading, setLoading] = useState(true);
   const [query, setQuery] = useState("");
   const { dangerZones, addDangerZone, removeDangerZone } = useMapStore();
   const { sharedWith } = useShareStore();
+
+  const focus = useCallback((latitude: number, longitude: number) => {
+    setCenter((c) => ({ latitude, longitude, zoom: FOCUS_ZOOM, key: (c?.key ?? 0) + 1 }));
+  }, []);
 
   const loadPlaces = useCallback(async (lat: number, lon: number) => {
     setLoading(true);
@@ -52,15 +58,7 @@ export const MapScreen: React.FC = () => {
       if (!alive) return;
       if (loc) {
         setMe(loc);
-        mapRef.current?.animateToRegion(
-          {
-            latitude: loc.latitude,
-            longitude: loc.longitude,
-            latitudeDelta: DEFAULT_DELTA,
-            longitudeDelta: DEFAULT_DELTA,
-          },
-          400,
-        );
+        focus(loc.latitude, loc.longitude);
         loadPlaces(loc.latitude, loc.longitude);
       } else {
         setLoading(false);
@@ -69,7 +67,7 @@ export const MapScreen: React.FC = () => {
     return () => {
       alive = false;
     };
-  }, [loadPlaces]);
+  }, [loadPlaces, focus]);
 
   const search = async () => {
     Keyboard.dismiss();
@@ -79,14 +77,11 @@ export const MapScreen: React.FC = () => {
       Alert.alert("Ort nicht gefunden", "Bitte versuche eine andere Schreibweise.");
       return;
     }
-    mapRef.current?.animateToRegion(
-      { ...hit, latitudeDelta: DEFAULT_DELTA, longitudeDelta: DEFAULT_DELTA },
-      500,
-    );
+    focus(hit.latitude, hit.longitude);
     loadPlaces(hit.latitude, hit.longitude);
   };
 
-  const onRegionPress = (region: Region) => {
+  const onMapLongPress = (point: { latitude: number; longitude: number }) => {
     Alert.alert("Gefahrenzone markieren?", "Der Punkt wird nur auf deinem Gerät gespeichert.", [
       { text: "Abbrechen", style: "cancel" },
       {
@@ -94,8 +89,8 @@ export const MapScreen: React.FC = () => {
         onPress: () =>
           addDangerZone({
             id: makeId(),
-            latitude: region.latitude,
-            longitude: region.longitude,
+            latitude: point.latitude,
+            longitude: point.longitude,
             createdAt: Date.now(),
           }),
       },
@@ -114,6 +109,37 @@ export const MapScreen: React.FC = () => {
     }
   };
 
+  const markers = useMemo<OsmMarker[]>(
+    () => [
+      ...places.map((p) => ({
+        id: `place:${p.id}`,
+        latitude: p.latitude,
+        longitude: p.longitude,
+        color: Colors.primary,
+        title: p.name,
+        subtitle: kindLabel(p.kind),
+      })),
+      ...dangerZones.map((z) => ({
+        id: `zone:${z.id}`,
+        latitude: z.latitude,
+        longitude: z.longitude,
+        color: Colors.danger,
+        title: "Gefahrenzone",
+        subtitle: "Antippen zum Entfernen",
+      })),
+    ],
+    [places, dangerZones],
+  );
+
+  const onMarkerPress = (id: string) => {
+    if (!id.startsWith("zone:")) return;
+    const zoneId = id.slice(5);
+    Alert.alert("Gefahrenzone entfernen?", undefined, [
+      { text: "Abbrechen", style: "cancel" },
+      { text: "Entfernen", style: "destructive", onPress: () => removeDangerZone(zoneId) },
+    ]);
+  };
+
   return (
     <Screen title="Sichere Orte in deiner Nähe" scroll={false} contentStyle={{ paddingBottom: 12 }}>
       <View style={styles.search}>
@@ -130,70 +156,14 @@ export const MapScreen: React.FC = () => {
       </View>
 
       <View style={styles.mapWrap}>
-        <MapView
-          ref={mapRef}
-          style={StyleSheet.absoluteFill}
-          showsUserLocation
-          showsMyLocationButton={false}
-          initialRegion={{
-            latitude: 52.52,
-            longitude: 13.405,
-            latitudeDelta: 0.08,
-            longitudeDelta: 0.08,
-          }}
-          onLongPress={(e) =>
-            onRegionPress({
-              ...e.nativeEvent.coordinate,
-              latitudeDelta: 0,
-              longitudeDelta: 0,
-            })
-          }
-        >
-          {me && (
-            <Circle
-              center={me}
-              radius={150}
-              fillColor="rgba(139,58,98,0.12)"
-              strokeColor="rgba(139,58,98,0.35)"
-            />
-          )}
-          {places.map((p) => (
-            <Marker
-              key={p.id}
-              coordinate={p}
-              title={p.name}
-              description={kindLabel(p.kind)}
-              tracksViewChanges={false}
-            >
-              <View style={[styles.pin, { backgroundColor: Colors.primary }]}>
-                <Heart size={13} color={Colors.white} fill={Colors.white} />
-              </View>
-            </Marker>
-          ))}
-          {dangerZones.map((z) => (
-            <Marker
-              key={z.id}
-              coordinate={z}
-              title="Gefahrenzone"
-              description="Zum Entfernen lange auf die Info tippen"
-              tracksViewChanges={false}
-              onCalloutPress={() =>
-                Alert.alert("Gefahrenzone entfernen?", undefined, [
-                  { text: "Abbrechen", style: "cancel" },
-                  {
-                    text: "Entfernen",
-                    style: "destructive",
-                    onPress: () => removeDangerZone(z.id),
-                  },
-                ])
-              }
-            >
-              <View style={[styles.pin, { backgroundColor: Colors.danger }]}>
-                <TriangleAlert size={13} color={Colors.white} />
-              </View>
-            </Marker>
-          ))}
-        </MapView>
+        <OsmMap
+          center={center}
+          user={me}
+          accuracyMeters={150}
+          markers={markers}
+          onLongPress={onMapLongPress}
+          onMarkerPress={onMarkerPress}
+        />
 
         {loading && (
           <View style={styles.loading}>
